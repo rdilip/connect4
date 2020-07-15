@@ -368,7 +368,7 @@ const Cell = ({
           }
           play(columnIndex);
           if (playAgainstAI) {
-            setTimeout(playAIMove, 1500);
+            playAIMove();
           }
         }}
       >
