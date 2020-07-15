@@ -85,14 +85,13 @@ class App extends React.Component {
   initBoard() {
     // Create a blank 6x7 matrix
     let board = [];
-    for (let r = 0; r < 6; r++) {
+    for (let r = 0; r < 7; r++) {
       let row = [];
       for (let c = 0; c < 7; c++) {
         row.push(null);
       }
       board.push(row);
     }
-
     this.setState({
       board,
       currentPlayer: this.state.player1,
@@ -121,7 +120,7 @@ class App extends React.Component {
     if (!this.state.gameOver) {
       // Place piece on board
       let board = this.state.board;
-      for (let r = 5; r >= 0; r--) {
+      for (let r = 6; r >= 0; r--) {
         if (!board[r][c]) {
           board[r][c] = this.state.currentPlayer;
           break;
@@ -153,7 +152,7 @@ class App extends React.Component {
   }
 
   async playAIMove() {
-    const payload = { board: this.state.board };
+    const payload = { board: this.state.board, playerAI: this.state.playerAI };
     const move = await fetch("http://localhost:8000", {
       method: "POST",
       headers: {
@@ -191,7 +190,7 @@ class App extends React.Component {
 
   checkVertical(board) {
     // Check only if row is 3 or greater
-    for (let r = 3; r < 6; r++) {
+    for (let r = 3; r < 7; r++) {
       for (let c = 0; c < 7; c++) {
         if (board[r][c]) {
           if (
@@ -208,7 +207,7 @@ class App extends React.Component {
 
   checkHorizontal(board) {
     // Check only if column is 3 or less
-    for (let r = 0; r < 6; r++) {
+    for (let r = 0; r < 7; r++) {
       for (let c = 0; c < 4; c++) {
         if (board[r][c]) {
           if (
@@ -225,7 +224,7 @@ class App extends React.Component {
 
   checkDiagonalRight(board) {
     // Check only if row is 3 or greater AND column is 3 or less
-    for (let r = 3; r < 6; r++) {
+    for (let r = 3; r < 7; r++) {
       for (let c = 0; c < 4; c++) {
         if (board[r][c]) {
           if (
@@ -242,7 +241,7 @@ class App extends React.Component {
 
   checkDiagonalLeft(board) {
     // Check only if row is 3 or greater AND column is 3 or greater
-    for (let r = 3; r < 6; r++) {
+    for (let r = 3; r < 7; r++) {
       for (let c = 3; c < 7; c++) {
         if (board[r][c]) {
           if (
