@@ -21,6 +21,15 @@ def get_move(request):
     board = filter_board(request.data['board'])
     # You now have the board as data. Implement your logic
 
+    # This is a fast way to check who wins.
+    # There is also a fast way to implement moves.
+    p1_bitmap, mask = make_bitmap(board)
+    p2_bitmap = p1_bitmap ^ mask
+    if check_bitmap_board(p1_bitmap):
+        print("Player 1 wins!")
+    elif check_bitmap_board(p2_bitmap):
+        print("Player 2 wins!")
+
     # Return the move as an integer 0 through 6 inclusive
     move = random.randrange(0, 7)
     print(move)
@@ -32,3 +41,42 @@ def filter_board(board):
             if board[i][j] is None:
                 board[i][j] = 0
     return board
+
+
+def make_bitmap(board):
+    """
+    Makes a mask using player1
+    """
+    player, mask = "", ""
+    for j in range(6, -1, -1):
+        mask += "0"
+        player += "0"
+        for i in range(6):
+            if board[i][j] == 1:
+                player += "1"
+                mask += "1"
+            elif board[i][j] == -1:
+                mask += "1"
+                player += "0"
+            else:
+                mask += "0"
+                player += "0"
+    return int(player, 2), int(mask, 2)
+
+def check_bitmap_board(player):
+    """
+    Fast checking using bitstrings. Checks if player 1 has won.
+    """
+    w = player & (player >> 7)
+    if w & (w >> 14):
+        return True
+    w = player & (player >> 1)
+    if w & (w >> 2):
+        return True
+    w = player & (player >> 6)
+    if w & (w >> 12):
+        return True
+    w = player & (player >> 8)
+    if w & (w >> 16):
+        return True
+    return False
