@@ -71,7 +71,9 @@ class App extends React.Component {
       board: [],
       gameOver: false,
       message: "",
+
       playAgainstAI: false,
+      playerAI: null,
     };
 
     // Bind play function to App component
@@ -96,6 +98,8 @@ class App extends React.Component {
       currentPlayer: this.state.player1,
       gameOver: false,
       message: "",
+      playAgainstAI: false,
+      playerAI: null,
     });
   }
 
@@ -111,6 +115,7 @@ class App extends React.Component {
       playAgainstAI: againstAI,
     });
   };
+
 
   play(c) {
     if (!this.state.gameOver) {
@@ -149,7 +154,6 @@ class App extends React.Component {
 
   async playAIMove() {
     const payload = { board: this.state.board };
-    console.log(payload);
     const move = await fetch("http://localhost:8000", {
       method: "POST",
       headers: {
@@ -258,10 +262,12 @@ class App extends React.Component {
     const choiceFns = [
       (() => {
         this.togglePlayAgainstAI(true);
+        this.setState({ playerAI: 1 });
         this.playAIMove();
       }).bind(this),
       (() => {
         this.togglePlayAgainstAI(true);
+        this.setState({ playerAI: -1 });
       }).bind(this),
     ];
 
@@ -272,6 +278,7 @@ class App extends React.Component {
             className="button blue"
             onClick={() => {
               this.togglePlayAgainstAI(false);
+              console.log(this.state.playAgainstAI);
             }}
           >
             Play Against Human
@@ -295,6 +302,8 @@ class App extends React.Component {
                   play={this.play}
                   playAgainstAI={this.state.playAgainstAI}
                   playAIMove={this.playAIMove}
+                  currentPlayer={this.state.currentPlayer}
+                  playerAI={this.state.playerAI}
                 />
               ))}
             </tbody>
@@ -307,7 +316,14 @@ class App extends React.Component {
 }
 
 // Row component
-const Row = ({ row, play, playAgainstAI, playAIMove }) => {
+const Row = ({
+  row,
+  play,
+  playAgainstAI,
+  playAIMove,
+  currentPlayer,
+  playerAI,
+}) => {
   return (
     <tr>
       {row.map((cell, i) => (
@@ -318,13 +334,23 @@ const Row = ({ row, play, playAgainstAI, playAIMove }) => {
           play={play}
           playAgainstAI={playAgainstAI}
           playAIMove={playAIMove}
+          currentPlayer={currentPlayer}
+          playerAI={playerAI}
         />
       ))}
     </tr>
   );
 };
 
-const Cell = ({ value, columnIndex, play, playAgainstAI, playAIMove }) => {
+const Cell = ({
+  value,
+  columnIndex,
+  play,
+  playAgainstAI,
+  playAIMove,
+  currentPlayer,
+  playerAI,
+}) => {
   let color = "white";
   if (value === 1) {
     color = "red";
@@ -337,9 +363,12 @@ const Cell = ({ value, columnIndex, play, playAgainstAI, playAIMove }) => {
       <div
         className="cell"
         onClick={() => {
+          if (currentPlayer === playerAI) {
+            return;
+          }
           play(columnIndex);
           if (playAgainstAI) {
-            playAIMove();
+            setTimeout(playAIMove, 1500);
           }
         }}
       >
